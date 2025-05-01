@@ -57,17 +57,6 @@ Built using pure HTML, CSS, and JavaScript:
 
 ---
 
-## 🚀 Running the Project
-### Backend (FastAPI)
-```bash
-uvicorn main:app --reload
-```
-
-### Frontend
-Open the `index.html` in browser or serve using:
-```bash
-python -m http.server
-```
 
 
 ## 🧪 Future Enhancements
@@ -126,6 +115,6 @@ Open `index.html` in a browser
 python -m http.server 8080
 ```
 
-Then visit: [http://localhost:8080](http://localhost:8080)
+Then visit: [http://localhost:8080](http://localhost:8080) 
 
 
