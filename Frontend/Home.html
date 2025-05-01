@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VitaGuardian Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f2f2f2;
+    }
+
+    header {
+      background-color: #004466;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+
+    #editProfileBtn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #ffffff33;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, select, textarea {
+      width: 96%;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    select {
+      width: 40% !important;
+    }
+
+    button {
+      background: #004466;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .chat-box {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+
+    .chat-message {
+      margin: 0.5rem 0;
+    }
+
+    .user {
+      text-align: right;
+      color: #004466;
+    }
+
+    .ai {
+      text-align: left;
+      color: #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #ChatDiv {
+        display: ruby-text !important
+    }
+
+    #uploadImageBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.2s ease;
+    }
+
+    #uploadImageBtn:hover {
+    background-color: #ddd;
+    }
+
+    #userInput {
+        width: 80%;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    VitaGuardian Assistant
+    <button id="editProfileBtn" class="hidden">Edit Profile</button>
+  </header>
+
+  <div class="container" id="profileSection">
+    <h2>Enter Your Profile</h2>
+    <form id="profileForm">
+      <label>Age:</label>
+      <input type="number" name="age" required>
+
+      <label>Do you have asthma?</label>
+    </br>
+      <select name="has_asthma">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <br>
+      <label>Can walk long distance?</label>
+      <br>
+      <select name="can_walk_long">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+      <br>
+
+      <label>House Type:</label>
+      <input type="text" name="house_type" placeholder="e.g. Apartment, Single-story house">
+
+      <label>Dependents :</label>
+      <input type="text" name="dependents" placeholder="e.g. Child, Elderly, Pet" required>
+
+      <label>Medical Dependencies:</label>
+      <input type="text" name="medical_dependencies">
+
+      <label>Home Exit Difficulty:</label>
+      <input type="text" name="exit_difficulty">
+
+      <label>Communication Access:</label>
+      <input type="text" name="communication_access" placeholder="e.g. Normal, Low">
+
+      <label>Power Dependency:</label>
+      <input type="text" name="power_dependency">
+
+      <button type="submit">Start Chat</button>
+    </form>
+  </div>
+
+  <div class="container hidden" id="chatSection">
+    <div class="chat-box" id="chatBox">
+      <div class="chat-message ai">Hello! I'm VitaGuardian. How can I assist you during this emergency?</div>
+    </div>
+
+    <form id="chatForm">
+     <div id ='ChatDiv'>
+      <input type="text" id="userInput" placeholder="Type your message..." required>
+      <input type="file" id="imageInput" accept="image/*" class="hidden" />
+       <button type="button" id="uploadImageBtn" title="Upload Image">+</button>
+
+      <button type="submit" >Send</button>
+    </div>
+    </form>
+  </div>
+
+  <script>
+    const profileSection = document.getElementById('profileSection');
+    const chatSection = document.getElementById('chatSection');
+    const profileForm = document.getElementById('profileForm');
+    const chatForm = document.getElementById('chatForm');
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+
+    const imageInput = document.getElementById('imageInput');
+    const uploadImageBtn = document.getElementById('uploadImageBtn');
+
+    uploadImageBtn.addEventListener('click', () => {
+    imageInput.click();  // Trigger hidden file input
+    });
+
+    let userProfile = {};
+
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(profileForm);
+      userProfile = Object.fromEntries(data.entries());
+      userProfile.has_asthma = userProfile.has_asthma === "true";
+      userProfile.can_walk_long = userProfile.can_walk_long === "true";
+      userProfile.dependents = userProfile.dependents.split(',').map(x => x.trim());
+      userProfile.medical_dependencies = userProfile.medical_dependencies.split(',').map(x => x.trim());
+      profileSection.classList.add('hidden');
+      chatSection.classList.remove('hidden');
+      editProfileBtn.classList.remove('hidden');
+    });
+
+    function formatAIResponse(data) {
+        let parsed = typeof data === "string" ? JSON.parse(data) : data;
+
+        // Then safely build the HTML
+        let html = "";
+        if (parsed["Current Situation"]) {
+        html += `<p><strong>📍 Current Situation:</strong><br>${parsed["Current Situation"]}</p>`;
+        }
+        if (parsed["Safety Instructions"]) {
+        html += `<p><strong>🛡️ Safety Instructions:</strong><br>${parsed["Safety Instructions"]}</p>`;
+        }
+        if (parsed["Where to Go"] && parsed["Where to Go"].information) {
+        const info = parsed["Where to Go"].information;
+        const loc = parsed["Where to Go"].location;
+        const mapLink = `https://www.google.com/maps/search/?api=1&query=${loc.lat},${loc.lon}`;
+        html += `<p><strong>🚶 Where to Go:</strong><br>${info}<br><a href="${mapLink}" target="_blank">🗺️ Open in Google Maps</a></p>`;
+        }
+        if (parsed["Additional Tips"]) {
+        html += `<p><strong>💡 Additional Tips:</strong><br>${parsed["Additional Tips"]}</p>`;
+        }
+
+        return html; // Add this line to return the constructed HTML    
+    } 
+
+    editProfileBtn.addEventListener('click', () => {
+      chatSection.classList.add('hidden');
+      profileSection.classList.remove('hidden');
+    });
+
+    function readImageAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            if (!file) return resolve(null);  // No image uploaded
+
+            const reader = new FileReader();
+            reader.onload = () => {
+            const base64String = reader.result.split(',')[1]; // Remove data:image/...;base64, prefix
+            resolve(base64String);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = userInput.value.trim();
+      if (!message) return;
+      const imageFile = document.getElementById('imageInput').files[0];
+      
+      navigator.geolocation.getCurrentPosition((position) => {
+        (async () => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          appendMessage('user', message);
+          userInput.value = '';
+          const imageBase64 = await readImageAsBase64(imageFile);
+          const payload = {
+            user_query: message,
+            personal_profile: userProfile,
+            lat: lat,
+            lon: lon,
+            Image: imageBase64 || ""
+          };
+
+          try {
+            const response = await fetch('http://127.0.0.1:8000/run-disaster-agent/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("Server error: " + response.status);
+
+            const data = await response.json();
+            const reply = data.response; 
+            const parsedReply = typeof reply === "string" ? JSON.parse(reply) : reply
+            console.log("AI response:", parsedReply);
+            const formatted = formatAIResponse(parsedReply);
+            appendMessage('ai', formatted);
+            userInput.value = ''; // Clear the input after sending
+            // Optionally, you can add a function to scroll to the bottom of the chat
+            chatBox.scrollTop = chatBox.scrollHeight; // Ensure the latest message is visible
+          } catch (err) {
+            console.error(err);
+            appendMessage('ai', "⚠️ Unable to reach server. Please try again later.");
+          }
+        })();
+      }, (err) => {
+        console.error("Geolocation error:", err);
+        appendMessage('ai', "⚠️ Could not get your location.");
+      });
+    });
+
+    function appendMessage(role, text) {
+      const msg = document.createElement('div');
+      msg.className = `chat-message ${role}`;
+      msg.innerHTML = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
